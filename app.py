@@ -1,68 +1,38 @@
 import streamlit as st
-import os
-
-# LangChain Loaders
-from langchain.document_loaders import CSVLoader, TextLoader, Docx2txtLoader
+import asyncio
+from langchain.document_loaders import Docx2txtLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain_community.vectorstores import Qdrant as QdrantVectorStore
+from langchain_community.vectorstores import Qdrant
 
-# Streamlit UI
-st.title("📄 Docs2txt Chatbot — CSV, TXT, DOCX")
-st.subheader("Upload a document and send it to Qdrant with Gemini embeddings")
+st.title("DOCX to Qdrant Upload")
+st.subheader("Upload your .docx file")
 
-uploaded_file = st.file_uploader("Upload your document", type=["csv", "txt", "docx"])
+file = st.file_uploader("Choose a DOCX file", type="docx")
 
-if uploaded_file is not None:
-    st.success("✅ File uploaded!")
+if file:
+    with open(file.name, "wb") as f:
+        f.write(file.getbuffer())
 
-    file_name = uploaded_file.name
-    with open(file_name, "wb") as f:
-        f.write(uploaded_file.getbuffer())
+    loader = Docx2txtLoader(file.name)
+    docs = loader.load()
 
-    # Auto detect file type
-    try:
-        if file_name.endswith(".csv"):
-            loader = CSVLoader(file_name)
-        elif file_name.endswith(".txt"):
-            loader = TextLoader(file_name)
-        elif file_name.endswith(".docx"):
-            loader = Docx2txtLoader(file_name)
-        else:
-            st.error("❌ Unsupported file format.")
-            st.stop()
+    splitter = RecursiveCharacterTextSplitter(chunk_size=100, chunk_overlap=100)
+    chunks = splitter.split_documents(docs)
 
-        docs = loader.load()
-        st.success("📄 Document loaded and parsed.")
-    except Exception as e:
-        st.error(f"❌ Failed to load document: {e}")
-        st.stop()
+    asyncio.set_event_loop(asyncio.new_event_loop())
 
-    # Split into chunks
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=100, chunk_overlap=100)
-    chunks = text_splitter.split_documents(docs)
+    embeddings = GoogleGenerativeAIEmbeddings(
+        model="models/embedding-001",
+        google_api_key="AIzaSyAaI6cEtck9zu9Vb0UphPTez2BkFRzFXdw"
+    )
 
-    # Gemini embeddings
-    try:
-        embeddings = GoogleGenerativeAIEmbeddings(
-            model="models/embedding-001",
-            google_api_key="AIzaSyAaI6cEtck9zu9Vb0UphPTez2BkFRzFXdw"
-        )
-    except Exception as e:
-        st.error(f"❌ Gemini API error: {e}")
-        st.stop()
+    qdrant = Qdrant.from_documents(
+        chunks,
+        embeddings,
+        url="https://fe58f34e-8a11-44b7-bc37-b36c7b67f516.us-west-1-0.aws.cloud.qdrant.io:6333",
+        api_key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.ZOuPanOWtPTZX6-ixCgGJ-SytMMUBco320lUIenAOgk",
+        collection_name="hope_cluster"
+    )
 
-    # Upload to Qdrant
-    try:
-        qdrant = QdrantVectorStore.from_documents(
-            chunks,
-            embeddings,
-            url="https://fe58f34e-8a11-44b7-bc37-b36c7b67f516.us-west-1-0.aws.cloud.qdrant.io:6333",
-            api_key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.ZOuPanOWtPTZX6-ixCgGJ-SytMMUBco320lUIenAOgk",
-            collection_name="hope_cluster"
-        )
-        st.success("✅ Data embedded and uploaded to Qdrant.")
-    except Exception as e:
-        st.error(f"❌ Qdrant upload error: {e}")
-else:
-    st.info("📥 Please upload a file to begin.")
+    st.success("Uploaded and embedded successfully.")
