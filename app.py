@@ -36,3 +36,17 @@ if file:
     )
 
     st.success("Uploaded and embedded successfully.")
+from langchain.chains import RetrievalQA
+from langchain_google_genai import ChatGoogleGenerativeAI
+
+query = st.text_input("Ask a question about your document")
+
+if query:
+    retriever = Qdrant.as_retriever()
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-1.5-flash",
+        google_api_key="YOUR_GEMINI_API_KEY"
+    )
+    chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
+    result = chain.run(query)
+    st.write("Answer:", result)
