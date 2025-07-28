@@ -42,7 +42,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 query = st.text_input("Ask a question about your document")
 
 if query:
-    retriever = Qdrant.as_retriever()
+    retriever = qdrant.as_retriever()
     llm = ChatGoogleGenerativeAI(
         model="gemini-1.5-flash",
         google_api_key="AIzaSyAaI6cEtck9zu9Vb0UphPTez2BkFRzFXdw"
