@@ -16,29 +16,26 @@ file = st.file_uploader("Choose any file", type=["docx","pdf","txt","CSV"])
 if file:
     with open(file.name, "wb") as f:
         f.write(file.getbuffer())
-
-    loader = TextLoader(file.name)
-    docs = loader.load()
-elif file:
-    with open(file.name, "wb") as f:
-        f.write(file.getbuffer())
-
-    loader = PypdfLoader(file.name)
-    docs = loader.load()
-elif file:
-    with open(file.name, "wb") as f:
-        f.write(file.getbuffer())
-
-    loader = CSVLoader(file.name)
-    docs = loader.load()
-else file:
-    with open(file.name, "wb") as f:
-        f.write(file.getbuffer())
-
-    loader = Docx2txtLoader(file.name)
+    #File detecting
+    file_type=file.type
+    
+    if file_type== "application/pdf":
+        loader = PypdfLoader(file.name)
+    
+    elif file_type=="text/plain":
+        loader = TextLoader(file.name)
+    
+    elif file_type="text/csv":
+        loader = CSVLoader(file.name)
+        
+    elif file_type=="application/document":
+        loader = Docx2txtLoader(file.name)
+    else:
+        st.warning("Unsupported File Type")
+        st.stop()
     docs = loader.load()
 
-    splitter = RecursiveCharacterTextSplitter(chunk_size=300, chunk_overlap=50)
+    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
     chunks = splitter.split_documents(docs)
 
     asyncio.set_event_loop(asyncio.new_event_loop())
@@ -60,7 +57,7 @@ else file:
 from langchain.chains import RetrievalQA
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-query = st.text_input("Ask a question about your document")
+query = st.chat_input("Ask a question about your document")
 
 if query:
     retriever = qdrant.as_retriever()
@@ -69,7 +66,7 @@ if query:
         google_api_key="AIzaSyAaI6cEtck9zu9Vb0UphPTez2BkFRzFXdw"
     )
 if "qdrant" is in st.session_state:
-    query=st.text_input("Ask your question")
+    query=st.chat_input("Ask your question")
 else:
     st.warning("Upload any document first")
     
