@@ -1,23 +1,44 @@
 import streamlit as st
 import asyncio
 from langchain.document_loaders import Docx2txtLoader
+from langchain.document_loaders import PyPdfLoader
+from langchain.document_loaders import CSVLoader
+from langchain.document_loaders import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_community.vectorstores import Qdrant
 
-st.title("DOCX to Qdrant Upload")
-st.subheader("Upload your .docx file")
+st.title("Chatbot")
+st.subheader("Upload your any type of file")
 
-file = st.file_uploader("Choose a DOCX file", type="docx")
+file = st.file_uploader("Choose any file", type=["docx","pdf","txt","CSV")
 
 if file:
+    with open(file.name, "wb") as f:
+        f.write(file.getbuffer())
+
+    loader = TextLoader(file.name)
+    docs = loader.load()
+elif file:
+    with open(file.name, "wb") as f:
+        f.write(file.getbuffer())
+
+    loader = PypdfLoader(file.name)
+    docs = loader.load()
+elif file:
+    with open(file.name, "wb") as f:
+        f.write(file.getbuffer())
+
+    loader = CSVLoader(file.name)
+    docs = loader.load()
+else file:
     with open(file.name, "wb") as f:
         f.write(file.getbuffer())
 
     loader = Docx2txtLoader(file.name)
     docs = loader.load()
 
-    splitter = RecursiveCharacterTextSplitter(chunk_size=100, chunk_overlap=100)
+    splitter = RecursiveCharacterTextSplitter(chunk_size=300, chunk_overlap=50)
     chunks = splitter.split_documents(docs)
 
     asyncio.set_event_loop(asyncio.new_event_loop())
@@ -47,6 +68,12 @@ if query:
         model="gemini-1.5-flash",
         google_api_key="AIzaSyAaI6cEtck9zu9Vb0UphPTez2BkFRzFXdw"
     )
+if "qdrant" is in st.session_state:
+    query=st.text_input("Ask your question")
+else:
+    st.warning("Upload any document first")
+    
+    
     chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
     result = chain.run(query)
     st.write("Answer:", result)
