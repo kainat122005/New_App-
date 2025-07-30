@@ -55,7 +55,7 @@ if file:
     st.session_state.qdrant=qdrant
     st.success("Uploaded and embedded successfully.")
 from langchain.chains import RetrievalQA
-
+from langchain_google_genai import ChatGoogleGenerativeAI
 if "chat_history" in st.session_state:
     for message in st.session_state.chat_history:
         with st.chat_message(message["role"]):
