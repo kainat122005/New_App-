@@ -9,6 +9,8 @@ st.title("Chatbot")
 st.subheader("Upload your any type of file")
 
 file = st.file_uploader("Choose any file", type=["docx","pdf","txt","CSV"])
+if not file and "qdrant" in st.session_state:
+    del st.session_state.qdrant
 if "chat_history" not in st.session_state:
    st.session_state.chat_history=[]
 
@@ -64,7 +66,7 @@ if "qdrant" in st.session_state:
     query = st.chat_input("Ask a question about your document")
     if query:
         retriever = st.session_state.qdrant.as_retriever()
-        llm = ChatGoogleGenerativeAI(
+       llm = ChatGoogleGenerativeAI(
             model="gemini-1.5-flash",
             google_api_key="AIzaSyAaI6cEtck9zu9Vb0UphPTez2BkFRzFXdw"
         )
@@ -82,5 +84,5 @@ if "qdrant" in st.session_state:
 else:
     st.warning("Upload any document first")
     st.stop()
-    
+     
   
