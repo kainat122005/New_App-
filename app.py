@@ -49,24 +49,25 @@ if file:
         api_key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.ZOuPanOWtPTZX6-ixCgGJ-SytMMUBco320lUIenAOgk",
         collection_name="hope_cluster"
     )
-
+    #We are storing our qdrant in session state so we apply condition in future
+    st.session_state.qdrant=qdrant
     st.success("Uploaded and embedded successfully.")
 from langchain.chains import RetrievalQA
 from langchain_google_genai import ChatGoogleGenerativeAI
-
-query = st.chat_input("Ask a question about your document")
-
-if query:
-    if "qdrant" not in st.session_state:
-        st.warning("Upload any document first")
-    else:
+if "qdrant" in st.session_state:
+    query = st.chat_input("Ask a question about your document")
+    if query:
         retriever = qdrant.as_retriever()
         llm = ChatGoogleGenerativeAI(
             model="gemini-1.5-flash",
             google_api_key="AIzaSyAaI6cEtck9zu9Vb0UphPTez2BkFRzFXdw"
         )
+         chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
+            result = chain.run(query)
+            st.write("Answer:", result)
+
+else:
+    st.warning("Upload any document first")
+    st.stop()
     
-    
-    chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
-    result = chain.run(query)
-    st.write("Answer:", result)
+  
