@@ -59,7 +59,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 query = st.chat_input("Ask a question about your document")
 
 if query:
-    if "qdrant" is not in st.session_state:
+    if "qdrant" not in st.session_state:
         st.warning("Upload any document first")
     else:
         retriever = qdrant.as_retriever()
