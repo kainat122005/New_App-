@@ -66,7 +66,7 @@ if "qdrant" in st.session_state:
     query = st.chat_input("Ask a question about your document")
     if query:
         retriever = st.session_state.qdrant.as_retriever()
-       llm = ChatGoogleGenerativeAI(
+        llm = ChatGoogleGenerativeAI(
             model="gemini-1.5-flash",
             google_api_key="AIzaSyAaI6cEtck9zu9Vb0UphPTez2BkFRzFXdw"
         )
