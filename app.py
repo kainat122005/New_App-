@@ -25,7 +25,7 @@ if file:
     elif file_type=="text/csv":
         loader = CSVLoader(file.name)
         
-    elif file_type=="application/document":
+    elif file_type=="application/vnd.openxmlformats-officedocument.wordprocessingml.document":
         loader = Docx2txtLoader(file.name)
     else:
         st.warning("Unsupported File Type")
