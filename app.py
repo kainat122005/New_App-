@@ -25,7 +25,7 @@ if file:
     elif file_type=="text/plain":
         loader = TextLoader(file.name)
     
-    elif file_type="text/csv":
+    elif file_type=="text/csv":
         loader = CSVLoader(file.name)
         
     elif file_type=="application/document":
