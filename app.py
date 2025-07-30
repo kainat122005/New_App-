@@ -11,7 +11,7 @@ from langchain_community.vectorstores import Qdrant
 st.title("Chatbot")
 st.subheader("Upload your any type of file")
 
-file = st.file_uploader("Choose any file", type=["docx","pdf","txt","CSV")
+file = st.file_uploader("Choose any file", type=["docx","pdf","txt","CSV"])
 
 if file:
     with open(file.name, "wb") as f:
