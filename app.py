@@ -1,7 +1,6 @@
 import streamlit as st
 import asyncio
-from langchain.document_loaders import Docx2txtLoader
-from langchain.document_loaders import PyPdfLoader
+from langchain.document_loaders import Docx2txtLoader,PyPdfLoader,CSVLoader
 from langchain.document_loaders import CSVLoader
 from langchain.document_loaders import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -60,15 +59,14 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 query = st.chat_input("Ask a question about your document")
 
 if query:
-    retriever = qdrant.as_retriever()
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-1.5-flash",
-        google_api_key="AIzaSyAaI6cEtck9zu9Vb0UphPTez2BkFRzFXdw"
-    )
-if "qdrant" is not in st.session_state:
-    query=st.chat_input("Ask your question")
-else:
-    st.warning("Upload any document first")
+    if "qdrant" is not in st.session_state:
+        st.warning("Upload any document first")
+    else:
+        retriever = qdrant.as_retriever()
+        llm = ChatGoogleGenerativeAI(
+            model="gemini-1.5-flash",
+            google_api_key="AIzaSyAaI6cEtck9zu9Vb0UphPTez2BkFRzFXdw"
+        )
     
     
     chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
