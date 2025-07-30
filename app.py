@@ -1,8 +1,6 @@
 import streamlit as st
 import asyncio
-from langchain.document_loaders import Docx2txtLoader,PyPdfLoader,CSVLoader
-from langchain.document_loaders import CSVLoader
-from langchain.document_loaders import TextLoader
+from langchain.document_loaders import Docx2txtLoader,PyPdfLoader,CSVLoader,TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_community.vectorstores import Qdrant
