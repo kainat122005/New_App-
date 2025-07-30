@@ -9,6 +9,8 @@ st.title("Chatbot")
 st.subheader("Upload your any type of file")
 
 file = st.file_uploader("Choose any file", type=["docx","pdf","txt","CSV"])
+if "chat_history" not in st.session_state:
+   st.session_state.chat_history=[]
 
 if file:
     with open(file.name, "wb") as f:
@@ -53,11 +55,15 @@ if file:
     st.session_state.qdrant=qdrant
     st.success("Uploaded and embedded successfully.")
 from langchain.chains import RetrievalQA
-from langchain_google_genai import ChatGoogleGenerativeAI
+
+if "chat_history" in st.session_state:
+    for message in st.session_state.chat_history:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
 if "qdrant" in st.session_state:
     query = st.chat_input("Ask a question about your document")
     if query:
-        retriever = qdrant.as_retriever()
+        retriever = st.session_state.qdrant.as_retriever()
         llm = ChatGoogleGenerativeAI(
             model="gemini-1.5-flash",
             google_api_key="AIzaSyAaI6cEtck9zu9Vb0UphPTez2BkFRzFXdw"
@@ -65,7 +71,14 @@ if "qdrant" in st.session_state:
         chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
         result = chain.run(query)
         st.write("Answer:", result)
-
+        # Adding history alignment 
+        # User asking question
+        st.session_state.chat_history.append({"role": "user","content": query})
+        # assistant answer
+        st.session_state.chat_history.append({"role": "assistant","content": result})
+        # Display response
+        with st.chat_message("assistant"):
+            st.markdown(result)
 else:
     st.warning("Upload any document first")
     st.stop()
