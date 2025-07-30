@@ -1,6 +1,6 @@
 import streamlit as st
 import asyncio
-from langchain.document_loaders import Docx2txtLoader,PyPdfLoader,CSVLoader,TextLoader
+from langchain.document_loaders import Docx2txtLoader,PyPDFLoader,CSVLoader,TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_community.vectorstores import Qdrant
@@ -17,7 +17,7 @@ if file:
     file_type=file.type
     
     if file_type== "application/pdf":
-        loader = PypdfLoader(file.name)
+        loader = PyPDFLoader(file.name)
     
     elif file_type=="text/plain":
         loader = TextLoader(file.name)
