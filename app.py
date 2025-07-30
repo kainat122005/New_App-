@@ -65,7 +65,7 @@ if query:
         model="gemini-1.5-flash",
         google_api_key="AIzaSyAaI6cEtck9zu9Vb0UphPTez2BkFRzFXdw"
     )
-if "qdrant" is in st.session_state:
+if "qdrant" is not in st.session_state:
     query=st.chat_input("Ask your question")
 else:
     st.warning("Upload any document first")
