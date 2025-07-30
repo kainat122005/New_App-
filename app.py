@@ -62,9 +62,9 @@ if "qdrant" in st.session_state:
             model="gemini-1.5-flash",
             google_api_key="AIzaSyAaI6cEtck9zu9Vb0UphPTez2BkFRzFXdw"
         )
-         chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
-            result = chain.run(query)
-            st.write("Answer:", result)
+        chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
+        result = chain.run(query)
+        st.write("Answer:", result)
 
 else:
     st.warning("Upload any document first")
