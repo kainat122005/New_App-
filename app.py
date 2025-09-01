@@ -38,7 +38,9 @@ if file:
 
     splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
     chunks = splitter.split_documents(docs)
-
+    import nest_asyncio
+    import asyncio
+    nest_asyncio.apply()
     embeddings = GoogleGenerativeAIEmbeddings(
         model="models/embedding-001",
         google_api_key="AIzaSyAaI6cEtck9zu9Vb0UphPTez2BkFRzFXdw"
