@@ -83,7 +83,6 @@ if "qdrant" in st.session_state:
         sources = result["source_documents"]
 
         st.write("Answer:", answer)
-        st.write("Sources:", sources)
         # Adding history alignment 
         # User asking question
         st.session_state.chat_history.append({"role": "user","content": query})
