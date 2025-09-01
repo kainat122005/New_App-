@@ -8,7 +8,7 @@ from langchain_community.vectorstores import Qdrant
 st.title("Chatbot")
 st.subheader("Upload your any type of file")
 
-file = st.file_uploader("Choose any file", type=["docx","pdf","txt","CSV"])
+file = st.file_uploader("Choose any file", type=["docx","pdf","txt","csv"])
 if not file and "qdrant" in st.session_state:
     del st.session_state.qdrant
 if "chat_history" not in st.session_state:
