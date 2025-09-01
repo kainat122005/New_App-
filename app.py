@@ -49,8 +49,8 @@ if file:
     qdrant = Qdrant.from_documents(
         chunks,
         embeddings,
-        url="https://fe58f34e-8a11-44b7-bc37-b36c7b67f516.us-west-1-0.aws.cloud.qdrant.io:6333",
-        api_key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.ZOuPanOWtPTZX6-ixCgGJ-SytMMUBco320lUIenAOgk",
+        url="https://e728f0c3-8330-4c60-ac27-45c5d17b556b.us-east4-0.gcp.cloud.qdrant.io",
+        api_key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.IqLcQc2ydNpwPibyqMqwQKQKU_Xmd4NaewxIg7irGmA",
         collection_name="hope_cluster"
     )
     #We are storing our qdrant in session state so we apply condition in future
