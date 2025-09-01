@@ -6,3 +6,4 @@ docx2txt
 qdrant-client
 google-generativeai
 nest_asyncio
+pypdf
