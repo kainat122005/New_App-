@@ -36,7 +36,7 @@ if file:
         st.stop()
     docs = loader.load()
 
-    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+    splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
     chunks = splitter.split_documents(docs)
     import nest_asyncio
     import asyncio
@@ -51,7 +51,7 @@ if file:
         embeddings,
         url="https://e728f0c3-8330-4c60-ac27-45c5d17b556b.us-east4-0.gcp.cloud.qdrant.io",
         api_key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.IqLcQc2ydNpwPibyqMqwQKQKU_Xmd4NaewxIg7irGmA",
-        collection_name=f"hope_cluster_{file.name}"
+        collection_name="hope_cluster"
     )
     #We are storing our qdrant in session state so we apply condition in future
     st.session_state.qdrant=qdrant
@@ -70,18 +70,22 @@ if "qdrant" in st.session_state:
             model="gemini-1.5-flash",
             google_api_key="AIzaSyAaI6cEtck9zu9Vb0UphPTez2BkFRzFXdw"
         )
-        chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
-        result = chain.run(query)
-        st.write("Answer:", result)
+        chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever , return_source_documents=True)
+        result = chain({"query": query})
 
+        answer = result["result"]
+        sources = result["source_documents"]
+
+        st.write("Answer:", answer)
+        st.write("Sources:", sources)
         # Adding history alignment 
         # User asking question
         st.session_state.chat_history.append({"role": "user","content": query})
         # assistant answer
-        st.session_state.chat_history.append({"role": "assistant","content": result})
+        st.session_state.chat_history.append({"role": "assistant","content": answer})
         # Display response
         with st.chat_message("assistant"):
-            st.markdown(result)
+                st.markdown(answer)
 else:
     st.warning("Upload any document first")
     st.stop()
