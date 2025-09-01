@@ -1,5 +1,4 @@
 import streamlit as st
-import asyncio
 from langchain.document_loaders import Docx2txtLoader,PyPDFLoader,CSVLoader,TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
@@ -15,26 +14,33 @@ if "chat_history" not in st.session_state:
    st.session_state.chat_history=[]
 
 if file:
-    with open(file.name, "wb") as f:
-        f.write(file.getbuffer())
-    #File detecting
-    file_type=file.type
+    file_type = file.type
     
-    if file_type== "application/pdf":
-        loader = PyPDFLoader(file.name)
-    
-    elif file_type=="text/plain":
-        loader = TextLoader(file.name)
-    
-    elif file_type=="text/csv":
-        loader = CSVLoader(file.name)
-        
-    elif file_type=="application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-        loader = Docx2txtLoader(file.name)
+    import tempfile
+    # Save uploaded file into a temporary file
+    with tempfile.NamedTemporaryFile(delete=False, suffix=file.name) as tmp_file:
+        tmp_file.write(file.getbuffer())  
+        tmp_path = tmp_file.name
+
+    if file_type == "application/pdf":
+        loader = PyPDFLoader(tmp_path)
+
+    elif file_type == "text/plain":
+        loader = TextLoader(tmp_path)
+
+    elif file_type == "text/csv":
+        loader = CSVLoader(tmp_path)
+
+    elif file_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        loader = Docx2txtLoader(tmp_path)
+
     else:
         st.warning("Unsupported File Type")
         st.stop()
+
     docs = loader.load()
+
+
 
     splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
     chunks = splitter.split_documents(docs)
