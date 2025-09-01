@@ -10,7 +10,7 @@ st.subheader("Upload your any type of file")
 
 file = st.file_uploader("Choose any file", type=["docx","pdf","txt","csv"])
 if not file and "qdrant" in st.session_state:
-    del st.session_state.qdrant
+    del st.session_state["qdrant"]
 if "chat_history" not in st.session_state:
    st.session_state.chat_history=[]
 
@@ -39,8 +39,6 @@ if file:
     splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
     chunks = splitter.split_documents(docs)
 
-    asyncio.set_event_loop(asyncio.new_event_loop())
-
     embeddings = GoogleGenerativeAIEmbeddings(
         model="models/embedding-001",
         google_api_key="AIzaSyAaI6cEtck9zu9Vb0UphPTez2BkFRzFXdw"
@@ -51,7 +49,7 @@ if file:
         embeddings,
         url="https://e728f0c3-8330-4c60-ac27-45c5d17b556b.us-east4-0.gcp.cloud.qdrant.io",
         api_key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.IqLcQc2ydNpwPibyqMqwQKQKU_Xmd4NaewxIg7irGmA",
-        collection_name="hope_cluster"
+        collection_name=f"hope_cluster_{file.name}"
     )
     #We are storing our qdrant in session state so we apply condition in future
     st.session_state.qdrant=qdrant
