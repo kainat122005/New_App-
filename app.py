@@ -72,8 +72,7 @@ if "qdrant" in st.session_state:
         )
         chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
         result = chain.run(query)
-        with st.chat_message("assistant"):
-    st.markdown(result)
+        st.write("Answer:", result)
 
         # Adding history alignment 
         # User asking question
