@@ -94,9 +94,10 @@ if "qdrant" in st.session_state:
         Question: {query}
         """
         prompt = PromptTemplate(template=template, input_variables=["query"])
-        chain = RetrievalQA(
+        chain = RetrievalQA.from_chain_type(
+            llm=llm,
             retriever=retriever,
-            combine_documents_chain=load_qa_chain(llm, chain_type="stuff", prompt=prompt),
+            chain_type="stuff",
             return_source_documents=True
         )
 
