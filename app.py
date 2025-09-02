@@ -1,8 +1,11 @@
 import streamlit as st
+from langchain.chains.question_answering import load_qa_chain
 from langchain.document_loaders import Docx2txtLoader,PyPDFLoader,CSVLoader,TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_community.vectorstores import Qdrant
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
 
 st.title("Chatbot")
 st.subheader("Upload your any type of file")
@@ -91,11 +94,10 @@ if "qdrant" in st.session_state:
         Question: {query}
         """
         prompt = PromptTemplate(template=template, input_variables=["query"])
-        chain = RetrievalQA.from_chain_type(
-                llm=llm,
-                retriever=retriever,
-                chain_type_kwargs={"prompt": prompt},
-                return_source_documents=True
+        chain = RetrievalQA(
+            retriever=retriever,
+            combine_documents_chain=load_qa_chain(llm, chain_type="stuff", prompt=prompt),
+            return_source_documents=True
         )
 
         result = chain({"query": query})
