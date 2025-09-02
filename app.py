@@ -40,6 +40,8 @@ if file:
 
     docs = loader.load()
 
+    import os
+    os.remove(tmp_path)
 
 
     splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
@@ -76,7 +78,26 @@ if "qdrant" in st.session_state:
             model="gemini-1.5-flash",
             google_api_key="AIzaSyAaI6cEtck9zu9Vb0UphPTez2BkFRzFXdw"
         )
-        chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever , return_source_documents=True)
+        from langchain.prompts import PromptTemplate
+
+        template = """
+        You are a helpful assistant for students. 
+        Always answer directly, correctly, and concisely. 
+
+       - If the answer is clearly defined in the provided text, use that.  
+       - If the provided text does not fully answer the question, then use your own knowledge to complete it.  
+       - Never give incomplete or misleading answers.  
+
+        Question: {query}
+        """
+        prompt = PromptTemplate(template=template, input_variables=["query"])
+        chain = RetrievalQA.from_chain_type(
+                llm=llm,
+                retriever=retriever,
+                chain_type_kwargs={"prompt": prompt},
+                return_source_documents=True
+        )
+
         result = chain({"query": query})
 
         answer = result["result"]
@@ -95,4 +116,5 @@ else:
     st.warning("Upload any document first")
     st.stop()
      
+
   
